@@ -1,7 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+
+public struct PlayerChoice
+{
+    public int Choice;
+    public bool LockIn;
+}
 
 public class NumberClashGame : MinigameBase
 {
@@ -12,20 +19,17 @@ public class NumberClashGame : MinigameBase
 
     GameObject[,] slotArray;
 
-    enum RoundStatus
-    {
-        IDLE,
-        ACTIVE,
-        END,
-    }
+    int curRound;
 
-    RoundStatus roundStats;
-
+    PlayerChoice[] playerList;
 
     public void Initialise()
     {
         Debug.Log("Number Clash game loaded");
-        roundStats = RoundStatus.IDLE;
+        curRound = 0;
+
+        playerList = new PlayerChoice[3];
+        ResetPlayersChoice();
 
         slotArray = new GameObject[MaxRounds, 4];
 
@@ -48,13 +52,12 @@ public class NumberClashGame : MinigameBase
     public void StartRound()
     {
         Debug.Log("Round Start");
-        roundStats = RoundStatus.ACTIVE;
+        curRound++;
     }
 
     public void EndRound()
     {
         Debug.Log("Round end");
-        roundStats = RoundStatus.END;
     }
 
     public override GameScoreData GetScoreData()
@@ -62,38 +65,84 @@ public class NumberClashGame : MinigameBase
         throw new System.NotImplementedException();
     }
 
+    //Converts DPad direction (Vector2) into integer choice
+    int VectorToInt(Vector2 dir)
+    {
+        //Up button
+        if (dir == Vector2.up)
+            return 1;
+
+        //Left button
+        if (dir == Vector2.left)
+            return 2;
+
+        //Right button
+        if (dir == Vector2.right)
+            return 3;
+
+        //Down button
+        if (dir == Vector2.down)
+            return 4;
+
+        //Nothing was pressed/touched
+        return -1;
+    }
+
     public override void OnDirectionalInput(int playerIndex, Vector2 direction)
     {
-        ///Translate each player's input into a number
-        ///Example:
-        /// -1 on the x-axis = left d-pad
-        /// +1 on the x-axis = right d-pad
-        /// -1 on the y-axis = down d-pad
-        /// +1 on the y-axis = up d-pad
+        //Player has locked in their choice
+        if (playerList[playerIndex].LockIn) return;
+        
+        //Convert vector to choice on DPad
+        int choice = VectorToInt(direction);
 
-        ///Example:
-        ///if (playerIndex == 0)
-        ///{
-        ///    if (direction.x == -1)
-        ///    {
-        ///
-        ///    }
-        ///}
+        //If no choice was made
+        if (choice == -1) return;
 
+        //Set players choice to their selection
+        playerList[playerIndex].Choice = choice;
+    }
+
+    //Locks that specific player from choosing
+    void LockPlayerChoice(int playerIndex)
+    {
+        if (playerList[playerIndex].LockIn) return;
+
+        playerList[playerIndex].LockIn = true;
+    }
+
+    //Resets all players choice and lock in
+    void ResetPlayersChoice()
+    {
+        for (int i = 0; i < playerList.Length; i++)
+        {
+            playerList[i].Choice = -1;
+            playerList[i].LockIn = false;
+        }
+    }
+
+    //Locks players who have not locked in themselves
+    void LockPlayersChoice()
+    {
+        for (int i = 0; i < playerList.Length; i++)
+        {
+            if (!playerList[i].LockIn)
+                playerList[i].LockIn = true;
+        }
     }
 
     public override void OnPrimaryFire(int playerIndex)
     {
         ///Function for confirming the selected panel
 
-
+        LockPlayerChoice(playerIndex);
     }
 
     public override void OnSecondaryFire(int playerIndex)
     {
         ///Function for confirming the selected panel
 
-
+        LockPlayerChoice(playerIndex);
     }
 
     public override void TimeUp()
@@ -104,8 +153,12 @@ public class NumberClashGame : MinigameBase
 
     protected override void OnResetGame()
     {
-
+        Debug.Log("RESET");
+        ResetPlayersChoice();
     }
+
+    //Checks all players if they locked in their choice
+    bool IsPlayersLocked() => playerList.Where(c => !c.LockIn).Any();
 
     protected override void OnUpdate()
     {
