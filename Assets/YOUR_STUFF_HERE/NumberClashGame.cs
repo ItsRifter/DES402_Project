@@ -71,6 +71,14 @@ public class NumberClashGame : MinigameBase
         /// -1 on the y-axis = down d-pad
         /// +1 on the y-axis = up d-pad
 
+        ///Example:
+        ///if (playerIndex == 0)
+        ///{
+        ///    if (direction.x == -1)
+        ///    {
+        ///
+        ///    }
+        ///}
 
     }
 
