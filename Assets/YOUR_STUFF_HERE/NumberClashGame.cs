@@ -22,7 +22,6 @@ public class NumberClashGame : MinigameBase
     RoundStatus roundStats;
 
 
-
     public void Initialise()
     {
         Debug.Log("Number Clash game loaded");
@@ -65,31 +64,44 @@ public class NumberClashGame : MinigameBase
 
     public override void OnDirectionalInput(int playerIndex, Vector2 direction)
     {
-        
+        ///Translate each player's input into a number
+        ///Example:
+        /// -1 on the x-axis = left d-pad
+        /// +1 on the x-axis = right d-pad
+        /// -1 on the y-axis = down d-pad
+        /// +1 on the y-axis = up d-pad
+
+
     }
 
     public override void OnPrimaryFire(int playerIndex)
     {
-        
+        ///Function for confirming the selected panel
+
+
     }
 
     public override void OnSecondaryFire(int playerIndex)
     {
-        
+        ///Function for confirming the selected panel
+
+
     }
 
     public override void TimeUp()
     {
-        
+        ///End the selection phase
+
     }
 
     protected override void OnResetGame()
     {
-        
+
     }
 
     protected override void OnUpdate()
     {
-        
+        ///Timer function here
+
     }
 }
