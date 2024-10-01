@@ -45,7 +45,9 @@ public class TEST_StackingDiamonds : MonoBehaviour
     {
         if (roundsLeft < 0) return;
 
+        DeterminePlayerInput();
         DetermineInput();
+
         UpdateSlot();
         
         if (Input.GetKeyDown(KeyCode.Space))
@@ -53,21 +55,50 @@ public class TEST_StackingDiamonds : MonoBehaviour
     }
 
     int choice = -1;
-    bool locked = false;
+    int lastPlayer = -1;
+
+    int playerOneChoice = -1;
+    int playerTwoChoice = -1;
+
+    bool playerOneLocked = false;
+    bool playerTwolocked = false;
+
+    //TESTING ONLY
+    //Gets the last player who inputted
+    void DeterminePlayerInput()
+    {
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) ||
+        Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D))
+            lastPlayer = 0;
+
+        if (Input.GetKeyDown(KeyCode.Y) || Input.GetKeyDown(KeyCode.G) ||
+        Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.J))
+            lastPlayer = 1;
+    }
 
     void DetermineInput()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        //Messy way of doing inputs, this is just for testing
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Y))
             choice = 0;
 
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.G))
             choice = 1;
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.J))
             choice = 2;
 
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.H))
             choice = 3;
+
+        if(lastPlayer != -1)
+        {
+            switch(lastPlayer)
+            {
+                case 0: playerOneChoice = choice; break;
+                case 1: playerTwoChoice = choice; break;
+            }
+        }
     }
 
     GameObject lastSelected = null;
@@ -83,7 +114,9 @@ public class TEST_StackingDiamonds : MonoBehaviour
             if(lastSelected != null)
                 lastSelected.GetComponent<Image>().color = Color.grey;
 
-            slot.GetComponent<Image>().color = Color.blue;
+            slot.GetComponent<ChoiceSlot>().OnSelected(choice);
+            
+            //slot.GetComponent<Image>().color = Color.blue;
 
             lastSelected = slot;
         }
@@ -96,8 +129,9 @@ public class TEST_StackingDiamonds : MonoBehaviour
 
         lastSelected = null;
 
-        choice = -1;
-        locked = false;
+        playerOneChoice = -1;
+        playerTwoChoice = -1;
+
         roundsLeft--;
     }
 }
