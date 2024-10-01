@@ -15,18 +15,26 @@ public class TEST_StackingDiamonds : MonoBehaviour
    
     int roundsLeft = -1;
 
+    [SerializeField] float xPosOffset = 0;
+    [SerializeField] float yPosOffset = 0;
+
+    [Tooltip("The horizontal positioning for the diagonal offset style every 2 rows")]
+    [SerializeField] float moduloOffset = 0;
+
+
     // Start is called before the first frame update
     void Start()
     {
         roundsLeft = maxRoundsTest-1;
 
-        for (int i = 0; i < 4; i++)    
+        for (int i = 0; i < grids.Length; i++)    
             MakeSlots(i);
     }
 
     void MakeSlots(int playerIndex)
     {
         slotArray = new GameObject[maxRoundsTest, 4];
+        Vector3 pos = grids[playerIndex].transform.position;
 
         //Create rows for each round
         for (int m = 0; m < slotArray.GetLength(0); m++)
@@ -35,6 +43,11 @@ public class TEST_StackingDiamonds : MonoBehaviour
             for (int p = 0; p < slotArray.GetLength(1); p++)
             {
                 var panel = Instantiate(slotPrefab, grids[playerIndex].transform);
+                panel.transform.position = new Vector3(pos.x-92 + (p * xPosOffset), pos.y-128 + (m * yPosOffset), 0);
+                
+                if (m % 2 == 0)
+                    panel.transform.localPosition += Vector3.right * moduloOffset;
+
                 slotArray[m, p] = panel;
             }
         }
