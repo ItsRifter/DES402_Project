@@ -6654,15 +6654,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 7361627255079524062, guid: 8588e55d5ccf2c2478b2d0b1661b955f, type: 3}
-  grids:
+  uiGrids:
   - {fileID: 1759531908}
   - {fileID: 1014832200}
   - {fileID: 913409742}
   - {fileID: 538669628}
   maxRoundsTest: 7
-  xPosOffset: 56
-  yPosOffset: 64
-  moduloOffset: 48
+  PosOffsetX: 48
+  PosOffsetY: 68
+  ModuloOffset: 64
 --- !u!4 &633803143
 Transform:
   m_ObjectHideFlags: 0

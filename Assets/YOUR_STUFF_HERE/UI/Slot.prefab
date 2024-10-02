@@ -89,7 +89,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlyOneColour: {r: 0, g: 0.5784073, b: 1, a: 1}
-  PlyTwoColour: {r: 1, g: 0, b: 0, a: 1}
+  PlyTwoColour: {r: 1, g: 0, b: 0.8579731, a: 1}
   PlyThreeColour: {r: 0, g: 1, b: 0.09951186, a: 1}
   PlyFourColour: {r: 0.9452996, g: 1, b: 0, a: 1}
   HoverColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  IsSelected: 0
+  PlayerOwners: 
