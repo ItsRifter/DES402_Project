@@ -62,9 +62,9 @@ public class ChoiceSlot : MonoBehaviour
     {
         switch (corner)
         {
-            case 0: return imgTop;
-            case 1: return imgLeft;
-            case 2: return imgRight;
+            case 0: return imgLeft;
+            case 1: return imgRight;
+            case 2: return imgTop;
             case 3: return imgBottom;
             
             default: return imgCenter;
@@ -84,14 +84,21 @@ public class ChoiceSlot : MonoBehaviour
         }
     }
 
-    public void SetCornerIcon(int cornerIndex, Sprite icon = null)
+    public void SetCornerIcon(int cornerIndex, int player)
     {
         GameObject corner = GetCornerObject(cornerIndex);
 
-        if (icon == null)
-            icon = GetSelectingPlayerIcon(cornerIndex);
+        corner.GetComponent<Image>().sprite = GetSelectingPlayerIcon(player);
+        corner.SetActive(true);
+    }
 
-        corner.GetComponent<Image>().sprite = icon;
+    public void SetCenterIcon(int player)
+    {
+        Sprite icon = GetSelectingPlayerIcon(player);
+        imgCenter.GetComponent<Image>().sprite = icon;
+        imgCenter.SetActive(true);
+
+        slotIcon.color = GetSelectingPlayerColour(player);
     }
 
     public void OnSelected(int player)
@@ -109,6 +116,12 @@ public class ChoiceSlot : MonoBehaviour
 
     public void Reset()
     {
+        imgTop.SetActive(false);
+        imgLeft.SetActive(false);
+        imgRight.SetActive(false);
+        imgBottom.SetActive(false);
+        imgCenter.SetActive(false);
+
         IsSelected = false;
         PlayerOwner = -1;
     }

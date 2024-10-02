@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -21.6}
-  m_SizeDelta: {x: 9, y: 9}
+  m_AnchoredPosition: {x: 0, y: -22.7}
+  m_SizeDelta: {x: 11, y: 11}
   m_Pivot: {x: 0.4999991, y: 0.4999983}
 --- !u!222 &8770608291120589214
 CanvasRenderer:
@@ -109,8 +109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 21.6}
-  m_SizeDelta: {x: 9, y: 9}
+  m_AnchoredPosition: {x: 0, y: 22.7}
+  m_SizeDelta: {x: 11, y: 11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3759565047067218752
 CanvasRenderer:
@@ -184,8 +184,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 28.8, y: 0}
-  m_SizeDelta: {x: 9, y: 9}
+  m_AnchoredPosition: {x: 29.7, y: 0}
+  m_SizeDelta: {x: 11, y: 11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2952124028907871307
 CanvasRenderer:
@@ -260,7 +260,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 9, y: 9}
+  m_SizeDelta: {x: 11, y: 11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5732405431542952921
 CanvasRenderer:
@@ -334,8 +334,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -28.8, y: 0}
-  m_SizeDelta: {x: 9, y: 9}
+  m_AnchoredPosition: {x: -29.7, y: 0}
+  m_SizeDelta: {x: 11, y: 11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &28948207978350071
 CanvasRenderer:
@@ -471,12 +471,12 @@ MonoBehaviour:
   PlyOneColour: {r: 0, g: 0.5784073, b: 1, a: 1}
   PlyTwoColour: {r: 1, g: 0, b: 0.8579731, a: 1}
   PlyThreeColour: {r: 0, g: 1, b: 0.09951186, a: 1}
-  PlyFourColour: {r: 0.9452996, g: 1, b: 0, a: 1}
+  PlyFourColour: {r: 1, g: 0.66734684, b: 0, a: 1}
   HoverColour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  PlyOneIcon: {fileID: 0}
-  PlyTwoIcon: {fileID: 0}
-  PlyThreeIcon: {fileID: 0}
-  PlyFourIcon: {fileID: 0}
+  PlyOneIcon: {fileID: -2413806693520163455, guid: 9d88e65093da5aa43ab8aa44d05f96b9, type: 3}
+  PlyTwoIcon: {fileID: 7482667652216324306, guid: d0daf5a502430c9409f67fd4648c6f4d, type: 3}
+  PlyThreeIcon: {fileID: 7482667652216324306, guid: c2da893e624f05f44a74127c00e01200, type: 3}
+  PlyFourIcon: {fileID: -9095717837082945937, guid: 4e2560417cbd9614ebdf691d594ac39e, type: 3}
   IsSelected: 0
   PlayerOwner: 0
   imgTop: {fileID: 3839439630122823120}

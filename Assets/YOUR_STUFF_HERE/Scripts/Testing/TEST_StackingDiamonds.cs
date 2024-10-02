@@ -10,6 +10,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
     [SerializeField] GameObject slotPrefab;
 
     [SerializeField] GameObject[] uiGrids;
+    [SerializeField] GameObject[] uiGridsModulo;
 
     [SerializeField] int maxRoundsTest;
     
@@ -60,11 +61,13 @@ public class TEST_StackingDiamonds : MonoBehaviour
             //Create the panels on that row
             for (int p = 0; p < slotArray.GetLength(1); p++)
             {
-                var panel = Instantiate(slotPrefab, uiGrids[playerIndex].transform);
-                panel.transform.position = new Vector3(pos.x-92 + (p * GridPosOffsetX), pos.y-128 + (m * GridPosOffsetY), 0);
-                
-                if (m % 2 == 0)
-                    panel.transform.localPosition += Vector3.right * GridModuloOffset;
+                Transform parentTransform = uiGrids[playerIndex].transform;
+
+                if (m % 2 > 0)
+                    parentTransform = uiGridsModulo[playerIndex].transform;
+
+                GameObject panel = Instantiate(slotPrefab, parentTransform);
+                panel.transform.position = new Vector3(pos.x-92 + (p * GridPosOffsetX), pos.y-128 + (m * GridPosOffsetY), 0);  
 
                 panel.GetComponent<ChoiceSlot>().RowIndex = p;
 
@@ -84,7 +87,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
 
         UpdateSlot();
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && choice != -1)
             AssignSlot();
     }
 
@@ -221,6 +224,20 @@ public class TEST_StackingDiamonds : MonoBehaviour
         return owners;
     }
 
+    List<int> GetOwningPlayers(ChoiceSlot curSlot, List<ChoiceSlot> slots)
+    {
+        //Gets every player owning that slot as an integer into a list
+        return slots.Where(s => s.RowIndex == curSlot.RowIndex).Select(p => p.PlayerOwner).ToList();
+    }
+
+    void SetSlotIcons(ChoiceSlot curSlot, List<ChoiceSlot> slots)
+    {
+        List<int> players = GetOwningPlayers(curSlot, slots);
+
+        for (int i = 0; i < players.Count; i++)
+            curSlot.SetCornerIcon(i, players[i]);
+    }
+
     //Determine score from that round for each player
     void DetermineScore(List<ChoiceSlot> slots)
     {
@@ -230,13 +247,16 @@ public class TEST_StackingDiamonds : MonoBehaviour
 
             //Multiple players has that slot
             if (totalOwners > 1)
+            {
                 slot.GetComponent<Image>().color = Color.red;
+                SetSlotIcons(slot, slots);
+            }
             
             //Only one player has that slot
             else if (totalOwners == 1)
             {
                 int player = slot.PlayerOwner;
-                slot.GetComponent<Image>().color = slot.GetSelectingPlayerColour(player);
+                slot.SetCenterIcon(player);
             }
         }
     }
