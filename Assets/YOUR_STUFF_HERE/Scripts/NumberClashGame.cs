@@ -150,11 +150,12 @@ public class NumberClashGame : MinigameBase
             //Create the panels on that row
             for (int p = 0; p < slotArray.GetLength(1); p++)
             {
-                var panel = Instantiate(slotPrefab, uiGrids[playerIndex].transform);
-                panel.transform.position = new Vector3(pos.x - 92 + (p * GridPosOffsetX), pos.y - 128 + (m * GridPosOffsetY), 0);
+                Transform parentTransform = uiGrids[playerIndex].transform;
 
-                if (m % 2 == 0)
-                    panel.transform.localPosition += Vector3.right * GridModuloOffset;
+                if (m % 2 > 0)
+                    parentTransform = uiGridsModulo[playerIndex].transform;
+
+                GameObject panel = Instantiate(slotPrefab, parentTransform);
 
                 panel.GetComponent<ChoiceSlot>().RowIndex = p;
 
@@ -174,26 +175,6 @@ public class NumberClashGame : MinigameBase
     private void Awake()
     {
         MinigameLoaded.AddListener(InitialiseGame);
-    }
-
-    private void Start()
-    {
-        curRound = MaxRounds - 1;
-
-        for (int i = 0; i < uiGrids.Length; i++)
-        {
-            GameObject[,] newGrid = MakeSlots(i);
-
-            switch (i)
-            {
-                case 0: gridOne = newGrid; break;
-                case 1: gridTwo = newGrid; break;
-                case 2: gridThree = newGrid; break;
-                case 3: gridFour = newGrid; break;
-            }
-        }
-
-        curGrid = gridOne;
     }
 
     private void FixedUpdate()
@@ -221,7 +202,7 @@ public class NumberClashGame : MinigameBase
         //Treat curRound as the index for the array
         curRound = 0;
 
-        playerList = new PlayerChoice[3];
+        playerList = new PlayerChoice[4];
         ResetPlayersChoice();
 
         for (int i = 0; i < uiGrids.Length; i++)
@@ -267,10 +248,21 @@ public class NumberClashGame : MinigameBase
         Debug.Log("Round Start");
     }
 
+    void ShowRoundResults()
+    {
+        IncrementGridSelect();
+
+        List<ChoiceSlot> slots = GetSelectedFromGrids();
+
+        DetermineScore(slots);
+    }
+
     public void EndRound()
     {
         Debug.Log("Round end");
-        curRound++;
+        ShowRoundResults();
+        
+        curRound--;
     }
 
     #endregion
@@ -377,7 +369,7 @@ public class NumberClashGame : MinigameBase
         playersLeft--;
 
         if (playersLeft <= 0)
-            EndRoundResults();
+            ShowRoundResults();
         else
             IncrementGridSelect();
     }
@@ -394,18 +386,17 @@ public class NumberClashGame : MinigameBase
     {
         if (choice == -1) return;
 
-        ///Copied over
-        //ChoiceSlot slot = curGrid[curRound, choice].GetComponent<ChoiceSlot>();
+        ChoiceSlot slot = curGrid[curRound, choice].GetComponent<ChoiceSlot>();
 
-        //if (lastSelected != slot)
-        //{
-        //    if (lastSelected != null)
-        //        lastSelected.GetComponent<Image>().color = Color.grey;
+        /*if (lastSelected != slot)
+        {
+            if (lastSelected != null)
+                lastSelected.GetComponent<Image>().color = Color.grey;
 
-        //    slot.OnSelected(grid);
+            slot.OnSelected(grid);
 
-        //    lastSelected = slot;
-        //}
+            lastSelected = slot;
+        }*/
     }
 
     #endregion
@@ -452,19 +443,5 @@ public class NumberClashGame : MinigameBase
                 slot.SetCenterIcon(player);
             }
         }
-    }
-
-    void EndRoundResults()
-    {
-        ///Copied over
-
-        IncrementGridSelect();
-
-        List<ChoiceSlot> slots = GetSelectedFromGrids();
-
-        DetermineScore(slots);
-
-        playersLeft = 4;
-        curRound--;
     }
 }
