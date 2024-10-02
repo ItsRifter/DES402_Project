@@ -190,6 +190,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
         curRound++;
     }
 
+    //Gets selected slots from each grid
     List<ChoiceSlot> GetSelectedFromGrids()
     {
         List<ChoiceSlot> slots = new List<ChoiceSlot>();
@@ -202,6 +203,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
             {
                 ChoiceSlot slot = grid[curRound, p].GetComponent<ChoiceSlot>();
 
+                //That slot is selected by a player
                 if(slot.IsSelected)
                     slots.Add(slot);
             }
@@ -229,6 +231,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
             //Multiple players has that slot
             if (totalOwners > 1)
                 slot.GetComponent<Image>().color = Color.red;
+            
             //Only one player has that slot
             else if (totalOwners == 1)
             {
