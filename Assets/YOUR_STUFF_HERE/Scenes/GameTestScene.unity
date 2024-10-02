@@ -6009,7 +6009,7 @@ GameObject:
   m_Layer: 0
   m_Name: U.I. Parent Canvas
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -6267,12 +6267,12 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 92
+    m_Top: 82
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 82, y: 82}
+  m_CellSize: {x: 64, y: 64}
   m_Spacing: {x: 0, y: 100}
   m_Constraint: 1
   m_ConstraintCount: 4
@@ -6454,7 +6454,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -68, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &538669628
@@ -6513,7 +6513,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 82, y: 82}
+  m_CellSize: {x: 64, y: 64}
   m_Spacing: {x: 0, y: 100}
   m_Constraint: 1
   m_ConstraintCount: 4
@@ -6856,12 +6856,12 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 92
+    m_Top: 82
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 82, y: 82}
+  m_CellSize: {x: 64, y: 64}
   m_Spacing: {x: 0, y: 100}
   m_Constraint: 1
   m_ConstraintCount: 4
@@ -12636,7 +12636,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 82, y: 82}
+  m_CellSize: {x: 64, y: 64}
   m_Spacing: {x: 0, y: 100}
   m_Constraint: 1
   m_ConstraintCount: 4
@@ -13176,12 +13176,12 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 92
+    m_Top: 82
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 82, y: 82}
+  m_CellSize: {x: 64, y: 64}
   m_Spacing: {x: 0, y: 100}
   m_Constraint: 1
   m_ConstraintCount: 4
@@ -13241,7 +13241,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 82, y: 82}
+  m_CellSize: {x: 64, y: 64}
   m_Spacing: {x: 0, y: 100}
   m_Constraint: 1
   m_ConstraintCount: 4
@@ -13649,7 +13649,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 10, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &1392733836 stripped
@@ -13959,7 +13959,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 52, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1521453281
@@ -14549,7 +14549,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 82, y: 82}
+  m_CellSize: {x: 64, y: 64}
   m_Spacing: {x: 0, y: 100}
   m_Constraint: 1
   m_ConstraintCount: 4
@@ -15030,12 +15030,12 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 92
+    m_Top: 82
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 82, y: 82}
+  m_CellSize: {x: 64, y: 64}
   m_Spacing: {x: 0, y: 100}
   m_Constraint: 1
   m_ConstraintCount: 4
@@ -15311,7 +15311,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -28, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2108129462
