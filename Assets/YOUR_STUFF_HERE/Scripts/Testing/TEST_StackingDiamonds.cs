@@ -32,7 +32,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        curRound = 0;
+        curRound = maxRoundsTest-1;
 
         for (int i = 0; i < uiGrids.Length; i++)
         {
@@ -53,8 +53,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
     GameObject[,] MakeSlots(int playerIndex)
     {
         GameObject[,] slotArray = new GameObject[maxRoundsTest, 4];
-        Vector3 pos = uiGrids[playerIndex].transform.position;
-
+        
         //Create rows for each round
         for (int m = 0; m < slotArray.GetLength(0); m++)
         {
@@ -67,8 +66,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
                     parentTransform = uiGridsModulo[playerIndex].transform;
 
                 GameObject panel = Instantiate(slotPrefab, parentTransform);
-                panel.transform.position = new Vector3(pos.x-92 + (p * GridPosOffsetX), pos.y-128 + (m * GridPosOffsetY), 0);  
-
+                
                 panel.GetComponent<ChoiceSlot>().RowIndex = p;
 
                 slotArray[m, p] = panel;
@@ -96,16 +94,16 @@ public class TEST_StackingDiamonds : MonoBehaviour
     void DetermineInput()
     {
         //Messy way of doing inputs, this is just for testing
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Y))
+        if (Input.GetKeyDown(KeyCode.W))
             choice = 0;
 
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.A))
             choice = 1;
 
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.J))
+        if (Input.GetKeyDown(KeyCode.S))
             choice = 2;
 
-        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.D))
             choice = 3;
     }
 
@@ -190,7 +188,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
         DetermineScore(slots);
 
         playersLeft = 4;
-        curRound++;
+        curRound--;
     }
 
     //Gets selected slots from each grid
