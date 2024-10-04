@@ -250,7 +250,7 @@ public class NumberClashGame : MinigameBase
 
     void ShowRoundResults()
     {
-        IncrementGridSelect();
+        //IncrementGridSelect();
 
         List<ChoiceSlot> slots = GetSelectedFromGrids();
 
@@ -370,8 +370,6 @@ public class NumberClashGame : MinigameBase
 
         if (playersLeft <= 0)
             ShowRoundResults();
-        else
-            IncrementGridSelect();
     }
 
     void SetSlotIcons(ChoiceSlot curSlot, List<ChoiceSlot> slots)
@@ -401,7 +399,7 @@ public class NumberClashGame : MinigameBase
 
     #endregion
 
-    void IncrementGridSelect()
+    /*void IncrementGridSelect()
     {
         grid++;
 
@@ -420,7 +418,7 @@ public class NumberClashGame : MinigameBase
             case 2: curGrid = gridThree; break;
             case 3: curGrid = gridFour; break;
         }
-    }
+    }*/
 
     //Determine score from that round for each player
     void DetermineScore(List<ChoiceSlot> slots)

@@ -1,24 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ChoiceSlot : MonoBehaviour
 {
-    public Color PlyOneColour = Color.white;
-    public Color PlyTwoColour = Color.white;
-    public Color PlyThreeColour = Color.white;
-    public Color PlyFourColour = Color.white;
+    [Header("Player Backgrounds")]
 
-    public Color HoverColour = Color.grey;
+    [SerializeField] Color PlyOneBGColour = Color.white;
+    [SerializeField] Color PlyTwoBGColour = Color.white;
+    [SerializeField] Color PlyThreeBGColour = Color.white;
+    [SerializeField] Color PlyFourBGColour = Color.white;
+
+    [Space(2)]
+
+    [Header("Player Icons")]
+
+    [SerializeField] Color PlyOneIconColour = Color.white;
+    [SerializeField] Color PlyTwoIconColour = Color.white;
+    [SerializeField] Color PlyThreeIconColour = Color.white;
+    [SerializeField] Color PlyFourIconColour = Color.white;
+
+    [Space(16)]
 
     public Sprite PlyOneIcon;
     public Sprite PlyTwoIcon;
     public Sprite PlyThreeIcon;
     public Sprite PlyFourIcon;
 
-    public bool IsSelected;
-    public int PlayerOwner;
+    [Space(32)]
+
+    public Sprite ClashIcon;
+
+    [SerializeField] Color BackgroundColor = Color.grey;
+    [SerializeField] Color ClashedColor = Color.red;
+
+    [HideInInspector] public bool IsSelected;
+    [HideInInspector] public int PlayerOwner;
 
     [SerializeField] GameObject imgTop;
     [SerializeField] GameObject imgLeft;
@@ -34,6 +53,7 @@ public class ChoiceSlot : MonoBehaviour
     void Start()
     {
         slotIcon = GetComponent<Image>();
+        slotIcon.color = BackgroundColor;
 
         imgTop.SetActive(false);
         imgLeft.SetActive(false);
@@ -45,16 +65,43 @@ public class ChoiceSlot : MonoBehaviour
         PlayerOwner = -1;
     }
 
-    public Color GetSelectingPlayerColour(int ply)
+    public Color GetPlayerBackgroundColour(int ply)
     {
         switch(ply)
         {
-            case 0: return PlyOneColour;
-            case 1: return PlyTwoColour;
-            case 2: return PlyThreeColour;
-            case 3: return PlyFourColour;
+            case 0: return PlyOneBGColour;
+            case 1: return PlyTwoBGColour;
+            case 2: return PlyThreeBGColour;
+            case 3: return PlyFourBGColour;
 
             default: return Color.white;
+        }
+    } 
+    
+    public Color GetPlayerColour(int ply)
+    {
+        switch(ply)
+        {
+            case 0: return PlyOneIconColour;
+            case 1: return PlyTwoIconColour;
+            case 2: return PlyThreeIconColour;
+            case 3: return PlyFourIconColour;
+
+            default: return Color.white;
+        }
+    }
+
+
+    public Sprite GetPlayerIcon(int ply)
+    {
+        switch (ply)
+        {
+            case 0: return PlyOneIcon;
+            case 1: return PlyTwoIcon;
+            case 2: return PlyThreeIcon;
+            case 3: return PlyFourIcon;
+
+            default: return null;
         }
     }
 
@@ -71,49 +118,55 @@ public class ChoiceSlot : MonoBehaviour
         }
     }
 
-    public Sprite GetSelectingPlayerIcon(int ply)
-    {
-        switch (ply)
-        {
-            case 0: return PlyOneIcon;
-            case 1: return PlyTwoIcon;
-            case 2: return PlyThreeIcon;
-            case 3: return PlyFourIcon;
-
-            default: return null;
-        }
-    }
-
+    //Sets the corner icon of index
     public void SetCornerIcon(int cornerIndex, int player)
     {
         GameObject corner = GetCornerObject(cornerIndex);
+        Image renderer = corner.GetComponentInChildren<Image>();
 
-        corner.GetComponent<Image>().sprite = GetSelectingPlayerIcon(player);
+        renderer.color = GetPlayerColour(player);
+        renderer.sprite = GetPlayerIcon(player);
+
         corner.SetActive(true);
     }
 
-    public void SetCenterIcon(int player)
+    public void SetCenterIcon(int player, bool hasClashed = false)
     {
-        Sprite icon = GetSelectingPlayerIcon(player);
-        imgCenter.GetComponent<Image>().sprite = icon;
+        Image renderer = imgCenter.GetComponentInChildren<Image>();
+
+        //If the slot hasn't clashed with multiple players
+        if(!hasClashed)
+        {
+            renderer.color = GetPlayerColour(player);
+            renderer.sprite = GetPlayerIcon(player);
+
+            slotIcon.color = GetPlayerBackgroundColour(player);
+        }
+        else
+        {
+            renderer.sprite = ClashIcon;
+            slotIcon.color = ClashedColor;
+        }
+
         imgCenter.SetActive(true);
 
-        slotIcon.color = GetSelectingPlayerColour(player);
     }
 
+    //When the slot is selected
     public void OnSelected(int player)
     {
-        Color plyCol = GetSelectingPlayerColour(player);
-
+        Color plyCol = GetPlayerBackgroundColour(player);
         slotIcon.color = plyCol;
     }
-
+    
+    //Assign the slot to that player
     public void Assign(int player)
     {
         IsSelected = true;
         PlayerOwner = player;
     }
 
+    //Reset slots
     public void Reset()
     {
         imgTop.SetActive(false);

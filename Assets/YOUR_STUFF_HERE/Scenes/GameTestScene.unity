@@ -6265,15 +6265,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
+    m_Left: 23
     m_Right: 0
-    m_Top: 82
+    m_Top: 44
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 64, y: 64}
-  m_Spacing: {x: 0, y: 100}
+  m_CellSize: {x: 78, y: 64}
+  m_Spacing: {x: 4, y: 25}
   m_Constraint: 1
   m_ConstraintCount: 4
 --- !u!1 &430174337
@@ -6513,8 +6513,8 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 64, y: 64}
-  m_Spacing: {x: 0, y: 100}
+  m_CellSize: {x: 78, y: 64}
+  m_Spacing: {x: 4, y: 25}
   m_Constraint: 1
   m_ConstraintCount: 4
 --- !u!1 &544613103
@@ -6854,15 +6854,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
+    m_Left: 23
     m_Right: 0
-    m_Top: 82
+    m_Top: 44
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 64, y: 64}
-  m_Spacing: {x: 0, y: 100}
+  m_CellSize: {x: 78, y: 64}
+  m_Spacing: {x: 4, y: 25}
   m_Constraint: 1
   m_ConstraintCount: 4
 --- !u!1001 &672445588
@@ -12636,8 +12636,8 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 64, y: 64}
-  m_Spacing: {x: 0, y: 100}
+  m_CellSize: {x: 78, y: 64}
+  m_Spacing: {x: 4, y: 25}
   m_Constraint: 1
   m_ConstraintCount: 4
 --- !u!1 &923254593
@@ -13174,15 +13174,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
+    m_Left: 23
     m_Right: 0
-    m_Top: 82
+    m_Top: 44
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 64, y: 64}
-  m_Spacing: {x: 0, y: 100}
+  m_CellSize: {x: 78, y: 64}
+  m_Spacing: {x: 4, y: 25}
   m_Constraint: 1
   m_ConstraintCount: 4
 --- !u!1 &1014832200
@@ -13241,8 +13241,8 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 64, y: 64}
-  m_Spacing: {x: 0, y: 100}
+  m_CellSize: {x: 78, y: 64}
+  m_Spacing: {x: 4, y: 25}
   m_Constraint: 1
   m_ConstraintCount: 4
 --- !u!1 &1052083787
@@ -14357,7 +14357,7 @@ Transform:
   m_GameObject: {fileID: 1707530932}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14549,8 +14549,8 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 64, y: 64}
-  m_Spacing: {x: 0, y: 100}
+  m_CellSize: {x: 78, y: 64}
+  m_Spacing: {x: 4, y: 25}
   m_Constraint: 1
   m_ConstraintCount: 4
 --- !u!1 &1776798281
@@ -15028,15 +15028,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
+    m_Left: 23
     m_Right: 0
-    m_Top: 82
+    m_Top: 44
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 64, y: 64}
-  m_Spacing: {x: 0, y: 100}
+  m_CellSize: {x: 78, y: 64}
+  m_Spacing: {x: 4, y: 25}
   m_Constraint: 1
   m_ConstraintCount: 4
 --- !u!1 &1979667260
@@ -15138,13 +15138,13 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  MaxRounds: 7
-  GridPosOffsetX: 48
-  GridPosOffsetY: 64
-  GridModuloOffset: 68
   slotPrefab: {fileID: 0}
   uiGrids: []
   uiGridsModulo: []
+  GridModuloOffset: 68
+  GridPosOffsetX: 48
+  GridPosOffsetY: 64
+  MaxRounds: 7
 --- !u!4 &1999319005 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4123755133023814891, guid: f60c2e9c87816cb4781f40a5325b9ce6, type: 3}
