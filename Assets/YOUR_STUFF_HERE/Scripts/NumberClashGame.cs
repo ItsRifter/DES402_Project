@@ -4,10 +4,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public struct PlayerChoice
+public struct PlayerStats
 {
-    public int Choice;
+    public GameObject Choice;
     public bool LockIn;
+    public int Score;
 }
 
 public class NumberClashGame : MinigameBase
@@ -15,16 +16,16 @@ public class NumberClashGame : MinigameBase
     #region Variables
 
     [Header("Slots")]
+    
     [SerializeField] GameObject slotPrefab;
     GameObject[,] slotArray;
 
-    [Space(10)]
+    [Space(16)]
 
     [Header("Grids")]
     [SerializeField] GameObject[] uiGrids;
     [SerializeField] GameObject[] uiGridsModulo;
 
-    GameObject[,] curGrid;
     GameObject[,] gridOne;
     GameObject[,] gridTwo;
     GameObject[,] gridThree;
@@ -44,19 +45,37 @@ public class NumberClashGame : MinigameBase
 
     [Space(10)]
 
-    [Header("Rounds")]
+    [Header("Gameplay")]
     public int MaxRounds = 7;
+
+    [Tooltip("How long the round will play before reveal")]
+    [SerializeField] float RoundTimer = 10.0f;
+
+    [Tooltip("How long to wait after the reveal for a new round")]
+    [SerializeField] float IntermissionTimer = 6.0f;
+
+    GameTimer gameTimer;
+
     int curRound;
 
-    PlayerChoice[] playerList;
+    PlayerStats[] playerList;
+
+    enum RoundStatus
+    {
+        IDLE,
+        ACTIVE,
+        POST
+    }
+
+    RoundStatus curRoundStatus = RoundStatus.IDLE;
 
     //Checks all players if they locked in their choice
-    bool IsPlayersLocked() => playerList.Where(c => !c.LockIn).Any();
+    bool AllPlayersLocked() => playerList.Where(c => !c.LockIn).Count() == 0;
 
     #region Integers
 
     int choice = -1;
-    int playersLeft = 4;
+    int playersLeft = 0;
 
     //Converts DPad direction (Vector2) into integer choice
     int VectorToInt(Vector2 dir)
@@ -142,7 +161,6 @@ public class NumberClashGame : MinigameBase
     GameObject[,] MakeSlots(int playerIndex)
     {
         GameObject[,] slotArray = new GameObject[MaxRounds, 4];
-        Vector3 pos = uiGrids[playerIndex].transform.position;
 
         //Create rows for each round
         for (int m = 0; m < slotArray.GetLength(0); m++)
@@ -180,31 +198,27 @@ public class NumberClashGame : MinigameBase
     private void FixedUpdate()
     {
         //Using FixedUpdate as per the SimpleExampleGame script
-
-        if (curRound > MaxRounds) return;
-
-        ///Copied over
-        //DetermineInput();
-
-        UpdateSlot();
-
-        ///Copied over
-        //if (Input.GetKeyDown(KeyCode.Space) && choice != -1)
-        //    AssignSlot();
     }
 
     #endregion
 
+    //Hacky fix to prevent loading more than once
+    bool hasLoaded = false;
+
     public void InitialiseGame()
     {
+        if (hasLoaded) return;
+
         Debug.Log("NUMBER CLASH: Loaded");
 
         //Treat curRound as the index for the array
-        curRound = 0;
+        curRound = MaxRounds-1;
 
-        playerList = new PlayerChoice[4];
+        //Create playerlist
+        playerList = new PlayerStats[4];
         ResetPlayersChoice();
 
+        //Create the grid for each player
         for (int i = 0; i < uiGrids.Length; i++)
         {
             GameObject[,] newGrid = MakeSlots(i);
@@ -217,6 +231,8 @@ public class NumberClashGame : MinigameBase
                 case 3: gridFour = newGrid; break;
             }
         }
+
+        hasLoaded = true;
     }
 
     public override GameScoreData GetScoreData()
@@ -246,12 +262,13 @@ public class NumberClashGame : MinigameBase
     public void StartRound()
     {
         Debug.Log("Round Start");
+
+        gameTimer = new GameTimer(RoundTimer);
+        curRoundStatus = RoundStatus.ACTIVE;
     }
 
     void ShowRoundResults()
     {
-        //IncrementGridSelect();
-
         List<ChoiceSlot> slots = GetSelectedFromGrids();
 
         DetermineScore(slots);
@@ -260,8 +277,12 @@ public class NumberClashGame : MinigameBase
     public void EndRound()
     {
         Debug.Log("Round end");
+        gameTimer = new GameTimer(IntermissionTimer);
+
         ShowRoundResults();
-        
+
+        curRoundStatus = RoundStatus.POST;
+
         curRound--;
     }
 
@@ -273,14 +294,18 @@ public class NumberClashGame : MinigameBase
     {
         ///Function for confirming the selected panel
 
-        LockPlayerChoice(playerIndex);
+        if (playerList[playerIndex].Choice == null) return;
+
+        AssignSlot(playerIndex);
     }
 
     public override void OnSecondaryFire(int playerIndex)
     {
         ///Function for confirming the selected panel
 
-        LockPlayerChoice(playerIndex);
+        if (playerList[playerIndex].Choice == null) return;
+
+        AssignSlot(playerIndex);
     }
 
     public override void OnDirectionalInput(int playerIndex, Vector2 direction)
@@ -292,10 +317,11 @@ public class NumberClashGame : MinigameBase
         int choice = VectorToInt(direction);
 
         //If no choice was made
-        if (choice == -1) return;
+        if (choice != -1)
+        {
+            UpdateSlot(playerIndex, choice);
+        }
 
-        //Set players choice to their selection
-        playerList[playerIndex].Choice = choice;
     }
 
     #endregion
@@ -315,7 +341,7 @@ public class NumberClashGame : MinigameBase
     {
         for (int i = 0; i < playerList.Length; i++)
         {
-            playerList[i].Choice = -1;
+            playerList[i].Choice = null;
             playerList[i].LockIn = false;
         }
     }
@@ -343,33 +369,41 @@ public class NumberClashGame : MinigameBase
     {
         Debug.Log("RESET");
         ResetPlayersChoice();
-
-        //From the SimpleExampleGame script
-        //InitialiseGame();
     }
 
     protected override void OnUpdate()
     {
         ///Game complete function here
+        if (curRoundStatus == RoundStatus.IDLE) return;
+        
+        float timeLeft = gameTimer.Tick(Time.deltaTime);
 
+        if(timeLeft <= 0.0f)
+        {
+            switch(curRoundStatus)
+            {
+                case RoundStatus.IDLE: break;
+
+                case RoundStatus.ACTIVE: EndRound(); break;
+                case RoundStatus.POST: StartRound(); break;
+            }
+        }
     }
 
     #endregion
 
     #region Slot Functions
 
-    void AssignSlot()
-    {
-        ChoiceSlot slot = curGrid[curRound, choice].GetComponent<ChoiceSlot>();
+    void AssignSlot(int playerIndex)
+    {        
+        ChoiceSlot slot = playerList[playerIndex].Choice.GetComponent<ChoiceSlot>();
         slot.Assign(grid);
 
-        //lastSelected = null;
+        LockPlayerChoice(playerIndex);
 
-        choice = -1;
-        playersLeft--;
-
-        if (playersLeft <= 0)
-            ShowRoundResults();
+        //All players have locked in
+        if (AllPlayersLocked())
+            EndRound();
     }
 
     void SetSlotIcons(ChoiceSlot curSlot, List<ChoiceSlot> slots)
@@ -380,45 +414,25 @@ public class NumberClashGame : MinigameBase
             curSlot.SetCornerIcon(i, players[i]);
     }
 
-    void UpdateSlot()
+    void UpdateSlot(int player, int chosen)
     {
-        if (choice == -1) return;
+        Debug.Log($"Player {player}, Round {curRound}, chosen {chosen}");
+        GameObject[,] grid = GetGrid(player);
+        
+        GameObject slot = grid[curRound, chosen];
 
-        ChoiceSlot slot = curGrid[curRound, choice].GetComponent<ChoiceSlot>();
+        Debug.Log(slot);
+        GameObject lastSlot = playerList[player].Choice;
 
-        /*if (lastSelected != slot)
-        {
-            if (lastSelected != null)
-                lastSelected.GetComponent<Image>().color = Color.grey;
+        if (lastSlot != null)
+            lastSlot.GetComponent<Image>().color = Color.grey;
 
-            slot.OnSelected(grid);
+        slot.GetComponent<ChoiceSlot>().OnSelected(player);
 
-            lastSelected = slot;
-        }*/
+        playerList[player].Choice = slot;    
     }
 
     #endregion
-
-    /*void IncrementGridSelect()
-    {
-        grid++;
-
-        if (grid > 3)
-            grid = 0;
-
-        //if (lastSelected != null)
-        //    lastSelected.GetComponent<Image>().color = Color.grey;
-
-        //lastSelected = null;
-
-        switch (grid)
-        {
-            case 0: curGrid = gridOne; break;
-            case 1: curGrid = gridTwo; break;
-            case 2: curGrid = gridThree; break;
-            case 3: curGrid = gridFour; break;
-        }
-    }*/
 
     //Determine score from that round for each player
     void DetermineScore(List<ChoiceSlot> slots)

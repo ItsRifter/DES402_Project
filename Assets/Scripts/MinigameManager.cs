@@ -168,7 +168,7 @@ public class MinigameManager : MonoBehaviour
                 if (Mathf.Approximately(0.0f, tRemaining))
                 {
                     //OnMinigameFinished();   //TODO: Better ending flow
-                    TimeUp();
+                    //TimeUp();
                 }
             }            
         }

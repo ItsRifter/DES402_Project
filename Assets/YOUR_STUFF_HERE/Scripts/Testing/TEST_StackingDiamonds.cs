@@ -244,7 +244,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
         return slots.Where(s => s.RowIndex == curSlot.RowIndex).ToList();
     }
 
-    void SetSlotCorners(ChoiceSlot curSlot, List<ChoiceSlot> slots)
+    void SetSlotIcons(ChoiceSlot curSlot, List<ChoiceSlot> slots)
     {
         List<int> players = GetOwningPlayers(curSlot, slots);
 
@@ -264,7 +264,7 @@ public class TEST_StackingDiamonds : MonoBehaviour
             if (totalOwners > 1)
             {
                 slot.SetCenterIcon(-1, true);
-                SetSlotCorners(slot, slots);
+                SetSlotIcons(slot, slots);
             }
             
             //Only one player has that slot
