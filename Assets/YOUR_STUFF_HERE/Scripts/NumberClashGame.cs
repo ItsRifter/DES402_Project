@@ -34,8 +34,6 @@ public class NumberClashGame : MinigameBase
     GameObject[,] gridThree;
     GameObject[,] gridFour;
 
-    int grid = 0;
-
     [Space(5)]
 
     [Tooltip("The horizontal positioning for the diagonal offset style every 2 rows")]
@@ -67,19 +65,28 @@ public class NumberClashGame : MinigameBase
     {
         IDLE,
         ACTIVE,
-        POST
+        POST,
+        CONCLUDE
     }
 
     RoundStatus curRoundStatus = RoundStatus.IDLE;
 
     PlayerManager playerManager;
+    bool isGamePlaying = false;
 
-    bool IsSinglePlayer() => playerList.Where(c => c.IsPlaying).Count() == 1;
+    #endregion
+
+    #region Miscellanous
+
+    //Should a bot fill in player slots
+    bool CanBotsPlay() => playerList.Where(c => c.IsPlaying).Count() != 4;
 
     //Checks all players if they locked in their choice
     bool AllPlayersLocked() => playerList.Where(c => c.IsPlaying).Where(l => !l.LockIn).Count() == 0;
 
-    #region Integers
+    #endregion
+
+    #region Numbers Getters
 
     int choice = -1;
 
@@ -115,15 +122,30 @@ public class NumberClashGame : MinigameBase
         return owners;
     }
 
+    float GetStatusTimer()
+    {
+        switch(curRoundStatus)
+        {
+            case RoundStatus.IDLE: return -1;
+
+            case RoundStatus.ACTIVE: return RoundTimer;
+            case RoundStatus.POST: return IntermissionTimer;
+
+            default: return -1;
+        }
+    }
+
     #endregion
 
-    #region Lists
+    #region Lists Getters
 
     List<int> GetOwningPlayers(ChoiceSlot curSlot, List<ChoiceSlot> slots)
     {
         //Gets every player owning that slot as an integer into a list
         return slots.Where(s => s.RowIndex == curSlot.RowIndex).Select(p => p.PlayerOwner).ToList();
     }
+
+    int GetTotalPlayersActive() => playerList.Where(a => a.IsPlaying).Count();
 
     //Gets selected slots from each grid
     List<ChoiceSlot> GetSelectedFromGrids()
@@ -147,9 +169,51 @@ public class NumberClashGame : MinigameBase
         return slots;
     }
 
+    //Gets selected slots from each grid
+    List<ChoiceSlot> GetSlotsFromGrid(bool areSelected, int rowIndex = -1)
+    {
+        List<ChoiceSlot> slots = new List<ChoiceSlot>();
+
+        for (int i = 0; i < uiGrids.Length; i++)
+        {
+            GameObject[,] grid = GetGrid(i);
+
+            for (int p = 0; p < 4; p++)
+            {
+                ChoiceSlot slot = grid[curRound, p].GetComponent<ChoiceSlot>();
+
+                //If we're looking for selected slots
+                if (areSelected && slot.IsSelected) slots.Add(slot);
+
+                //Otherwise if not
+                else if (!areSelected)
+                {
+                    if (slot.RowIndex == rowIndex)
+                        slots.Add(slot);
+                }
+            }
+        }
+
+        return slots;
+    }
+
+    /// <summary>
+    /// Returns all players score
+    /// </summary>
+    /// <returns>Each players score of ranking in descending order</returns>
+    List<int> GetPlayerRanking()
+    {
+        var scores = playerList.Select(p => p.Score).ToList();
+        
+        scores.Sort();
+        scores.Reverse();
+
+        return scores;
+    }
+
     #endregion
 
-    #region GameObjects
+    #region GameObjects Getters
 
     GameObject[,] GetGrid(int grid)
     {
@@ -192,8 +256,6 @@ public class NumberClashGame : MinigameBase
 
     #endregion
 
-    #endregion
-
     #region Awake, Start and Update Functions
 
     private void Awake()
@@ -205,12 +267,7 @@ public class NumberClashGame : MinigameBase
     {
         //Using FixedUpdate as per the SimpleExampleGame script
     }
-
-    #endregion
-
-    //Hacky fix to prevent loading more than once
-    bool hasLoaded = false;
-
+    
     //Creates the players
     void CreatePlayers()
     {
@@ -224,6 +281,13 @@ public class NumberClashGame : MinigameBase
             playerList[i].Score = 0;
         }
     }
+
+    #endregion
+
+    #region Gameplay
+
+    //Hacky fix to prevent loading more than once
+    bool hasLoaded = false;
 
     public void InitialiseGame()
     {
@@ -251,8 +315,116 @@ public class NumberClashGame : MinigameBase
         }
 
         hasLoaded = true;
+
         Debug.Log("NUMBER CLASH: Loaded");
     }
+
+    public void FinishGame()
+    {
+        Debug.Log("GAME END");
+        curRoundStatus = RoundStatus.CONCLUDE;
+
+        var scoring = GetPlayerRanking();
+
+        for (int i = 0; i < playerList.Length; i++)
+        {
+            Debug.Log($"RANK {i+1} - PLAYER {i} with {scoring[i]}");
+        }
+
+        EndGame();
+    }
+
+    public void StopGame()
+    {
+        isGamePlaying = false;
+    }
+
+    //Determine score from that round for each player
+    void DetermineScore(List<ChoiceSlot> slots)
+    {
+        foreach (ChoiceSlot slot in slots)
+        {
+            int totalOwners = CountMatchingSlotOwners(slot, slots);
+
+            //Multiple players has that slot
+            if (totalOwners > 1)
+                SetClashSlotIcons(slot, slots);
+
+            //Only one player has that slot
+            else if (totalOwners == 1)
+            {
+                int player = slot.PlayerOwner;
+
+                playerList[player].Score++;
+
+                //Set other players grid of matching slot row to who owns it
+                List<ChoiceSlot> otherSlots = GetSlotsFromGrid(false, slot.RowIndex);
+
+                foreach (var other in otherSlots)
+                    other.SetCenterIcon(player);
+            }
+        }
+    }
+
+    #region Rounds
+
+    public void StartRound()
+    {
+        Debug.Log("Round Start");
+
+        if (!isGamePlaying)
+            isGamePlaying = true;
+
+        ResetPlayersChoice();
+
+        gameTimer = new GameTimer(RoundTimer);
+        curRoundStatus = RoundStatus.ACTIVE;
+    }
+
+    void ShowRoundResults()
+    {
+        List<ChoiceSlot> slots = GetSelectedFromGrids();
+
+        DetermineScore(slots);
+    }
+
+    public void EndRound()
+    {
+        Debug.Log("Round end");
+
+        curRoundStatus = RoundStatus.POST;
+        ForcePlayersChoice();
+
+        Debug.Log($"Bots enabled: {CanBotsPlay()}");
+
+        //If theres less than 4 players, fill in the missing slots
+        if (CanBotsPlay())
+        {
+            for (int i = GetTotalPlayersActive(); i < 4; i++)
+            {
+                UpdateSlot(i, Random.Range(0, 4));
+                AssignSlot(i, true);
+            }
+        }
+
+        ShowRoundResults();
+
+        //Last round has concluded, end the game
+        if (curRound == 0)
+            FinishGame();
+
+        //Otherwise continue with the game
+        else
+        {
+            gameTimer = new GameTimer(IntermissionTimer);
+
+            curRound--;
+        }
+    }
+
+    #endregion
+
+    #endregion
 
     public override GameScoreData GetScoreData()
     {
@@ -276,50 +448,11 @@ public class NumberClashGame : MinigameBase
         //return gsd;
     }
 
-    #region Rounds
-
-    public void StartRound()
-    {
-        Debug.Log("Round Start");
-
-        gameTimer = new GameTimer(RoundTimer);
-        curRoundStatus = RoundStatus.ACTIVE;
-    }
-
-    void ShowRoundResults()
-    {
-        List<ChoiceSlot> slots = GetSelectedFromGrids();
-
-        DetermineScore(slots);
-    }
-
-    public void EndRound()
-    {
-        Debug.Log("Round end");
-        gameTimer = new GameTimer(IntermissionTimer);
-
-        if(IsSinglePlayer())
-        {
-            UpdateSlot(1, Random.Range(0, 3));
-            AssignSlot(1);
-        }
-
-        ShowRoundResults();
-
-        curRoundStatus = RoundStatus.POST;
-
-        curRound--;
-    }
-
-    #endregion
-
     #region Input Functions
 
     public override void OnPrimaryFire(int playerIndex)
     {
         ///Function for confirming the selected panel
-
-        if (playerList[playerIndex].Choice == null) return;
 
         AssignSlot(playerIndex);
     }
@@ -327,8 +460,6 @@ public class NumberClashGame : MinigameBase
     public override void OnSecondaryFire(int playerIndex)
     {
         ///Function for confirming the selected panel
-
-        if (playerList[playerIndex].Choice == null) return;
 
         AssignSlot(playerIndex);
     }
@@ -341,12 +472,9 @@ public class NumberClashGame : MinigameBase
         //Convert vector to choice on DPad
         int choice = VectorToInt(direction);
 
-        //If no choice was made
-        if (choice != -1)
-        {
+        //If a choice was made and game is active
+        if (choice != -1 && isGamePlaying)
             UpdateSlot(playerIndex, choice);
-        }
-
     }
 
     #endregion
@@ -356,8 +484,6 @@ public class NumberClashGame : MinigameBase
     //Locks that specific player from choosing
     void LockPlayerChoice(int playerIndex)
     {
-        if (playerList[playerIndex].LockIn) return;
-
         playerList[playerIndex].LockIn = true;
     }
 
@@ -388,6 +514,23 @@ public class NumberClashGame : MinigameBase
         {
             if (!playerList[i].LockIn)
                 playerList[i].LockIn = true;
+        }
+    }
+
+    //Forces player to lock in choice if possible
+    void ForcePlayersChoice()
+    {
+        for (int i = 0; i < playerList.Length; i++)
+        {
+            //That player did not make a choice
+            if (playerList[i].Choice == null)
+            {
+                //Lock their selections anyway
+                LockPlayerChoice(i);
+                continue;
+            }
+
+            AssignSlot(i);
         }
     }
 
@@ -422,13 +565,14 @@ public class NumberClashGame : MinigameBase
     protected override void OnUpdate()
     {
         ///Game complete function here
-        if (curRoundStatus == RoundStatus.IDLE) return;
-
+        if (!isGamePlaying) return;
+        
         CheckPlayers();
 
-        float timeLeft = gameTimer.Tick(Time.deltaTime);
+        gameTimer.Tick(Time.deltaTime);
+        float timeLeft = gameTimer.TotalTime;
 
-        if(timeLeft <= 0.0f)
+        if(timeLeft > GetStatusTimer())
         {
             switch(curRoundStatus)
             {
@@ -436,42 +580,63 @@ public class NumberClashGame : MinigameBase
 
                 case RoundStatus.ACTIVE: EndRound(); break;
                 case RoundStatus.POST: StartRound(); break;
+                case RoundStatus.CONCLUDE: StopGame(); break;
             }
         }
     }
 
     #endregion
 
-    #region Slot Functions
+    #region Slot & Grid Functions
 
-    void AssignSlot(int playerIndex)
-    {        
+    void AssignSlot(int playerIndex, bool isBot = false)
+    {
+        //Game isn't properly playing
+        if (!isGamePlaying) return;
+
+        //If the player is not a bot, run checks
+        if(!isBot)
+        {
+            //If the player made no choice
+            if (playerList[playerIndex].Choice == null) return;
+
+            //Player is already locked in
+            if (playerList[playerIndex].LockIn) return;
+        }
+
         ChoiceSlot slot = playerList[playerIndex].Choice.GetComponent<ChoiceSlot>();
-        slot.Assign(grid);
+        slot.Assign(playerIndex);
 
         LockPlayerChoice(playerIndex);
-        Debug.Log(AllPlayersLocked());
-        //All players have locked in
-        if (AllPlayersLocked())
+        
+        //All players have locked in and round is active
+        if (AllPlayersLocked() && curRoundStatus == RoundStatus.ACTIVE)
             EndRound();
     }
 
-    void SetSlotIcons(ChoiceSlot curSlot, List<ChoiceSlot> slots)
+    void SetClashSlotIcons(ChoiceSlot curSlot, List<ChoiceSlot> slots)
     {
         List<int> players = GetOwningPlayers(curSlot, slots);
 
-        for (int i = 0; i < players.Count; i++)
-            curSlot.SetCornerIcon(i, players[i]);
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject[,] grid = GetGrid(i);
+
+            ChoiceSlot slot = grid[curRound, curSlot.RowIndex].GetComponent<ChoiceSlot>();
+
+            slot.SetCenterIcon(-1, true);
+
+            for (int p = 0; p < players.Count; p++)
+                slot.SetCornerIcon(p, players[p]);
+        }
     }
 
     void UpdateSlot(int player, int chosen)
     {
-        Debug.Log($"Player {player}, Round {curRound}, chosen {chosen}");
         GameObject[,] grid = GetGrid(player);
         
         GameObject slot = grid[curRound, chosen];
 
-        Debug.Log(slot);
         GameObject lastSlot = playerList[player].Choice;
 
         if (lastSlot != null)
@@ -483,58 +648,4 @@ public class NumberClashGame : MinigameBase
     }
 
     #endregion
-
-    //Gets selected slots from each grid
-    List<ChoiceSlot> GetSlotsFromGrid(bool areSelected, int rowIndex = -1)
-    {
-        List<ChoiceSlot> slots = new List<ChoiceSlot>();
-
-        for (int i = 0; i < uiGrids.Length; i++)
-        {
-            GameObject[,] grid = GetGrid(i);
-
-            for (int p = 0; p < 4; p++)
-            {
-                ChoiceSlot slot = grid[curRound, p].GetComponent<ChoiceSlot>();
-
-                //If we're looking for selected slots
-                if (areSelected && slot.IsSelected) slots.Add(slot);
-
-                //Otherwise if not
-                else if (!areSelected)
-                {
-                    if (slot.RowIndex == rowIndex)
-                        slots.Add(slot);
-                }
-            }
-        }
-
-        return slots;
-    }
-
-    //Determine score from that round for each player
-    void DetermineScore(List<ChoiceSlot> slots)
-    {
-        foreach (ChoiceSlot slot in slots)
-        {
-            int totalOwners = CountMatchingSlotOwners(slot, slots);
-
-            //Multiple players has that slot
-            if (totalOwners > 1)
-            {
-                slot.SetCenterIcon(-1, true);
-                SetSlotIcons(slot, slots);
-            }
-
-            //Only one player has that slot
-            else if (totalOwners == 1)
-            {
-                int player = slot.PlayerOwner;
-                List<ChoiceSlot> otherSlots = GetSlotsFromGrid(false, slot.RowIndex);
-
-                foreach (var other in otherSlots)
-                    other.SetCenterIcon(player);
-            }
-        }
-    }
 }
