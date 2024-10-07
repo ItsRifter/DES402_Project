@@ -130,7 +130,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Seahorse_Icon_0: 5661048612840148752
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

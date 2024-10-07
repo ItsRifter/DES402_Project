@@ -130,7 +130,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Stop_Icon_Black_ver.__0: 6797092820070083629
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

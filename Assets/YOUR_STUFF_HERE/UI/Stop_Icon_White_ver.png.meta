@@ -130,7 +130,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Stop_Icon_White_ver_0: 301628397598980992
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

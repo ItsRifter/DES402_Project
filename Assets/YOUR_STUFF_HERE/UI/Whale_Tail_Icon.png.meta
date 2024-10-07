@@ -130,7 +130,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Whale_Tail_Icon_0: 4593811082178604495
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
