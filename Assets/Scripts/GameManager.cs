@@ -304,7 +304,7 @@ public class GameManager : MonoBehaviour
             float timeLeft = m_GameTimer.Tick(Time.deltaTime);            
             
             
-            if (Mathf.Approximately(0.0f, timeLeft))
+            /*if (Mathf.Approximately(0.0f, timeLeft))
             {
                 VFXManager.ClearInstantCountdown();
                 ChangeGameState(GameState.ENDSTATE);
@@ -318,7 +318,7 @@ public class GameManager : MonoBehaviour
                     VFXManager.ClearInstantCountdown();
                     VFXManager.PlayInstantCountdown(iTimeLeft);
                 }
-            }
+            }*/
             m_LastFrameTime = timeLeft;
         }
 

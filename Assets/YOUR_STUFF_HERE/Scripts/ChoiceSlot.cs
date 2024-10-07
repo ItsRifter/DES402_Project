@@ -48,6 +48,11 @@ public class ChoiceSlot : MonoBehaviour
     Color curColor;
     Image slotIcon;
 
+    public AudioClip SelectSound;
+
+    public AudioClip ClashSound;
+    public AudioClip SuccessSound;
+
     public int RowIndex;
 
     void Start()
@@ -90,7 +95,6 @@ public class ChoiceSlot : MonoBehaviour
             default: return Color.white;
         }
     }
-
 
     public Sprite GetPlayerIcon(int ply)
     {
@@ -157,6 +161,8 @@ public class ChoiceSlot : MonoBehaviour
     {
         Color plyCol = GetPlayerBackgroundColour(player);
         slotIcon.color = plyCol;
+
+        PlayerAudioManager.PlayOneShot(player, SelectSound, 0.75f);
     }
     
     //Assign the slot to that player

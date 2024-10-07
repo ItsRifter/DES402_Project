@@ -55,6 +55,9 @@ public class NumberClashGame : MinigameBase
     [Tooltip("How long to wait after the reveal for a new round")]
     [SerializeField] float IntermissionTimer = 6.0f;
 
+    [Tooltip("How long to wait when the game ends to reset for next game")]
+    [SerializeField] float EndTimer = 5.0f;
+
     GameTimer gameTimer;
 
     int curRound;
@@ -130,6 +133,7 @@ public class NumberClashGame : MinigameBase
 
             case RoundStatus.ACTIVE: return RoundTimer;
             case RoundStatus.POST: return IntermissionTimer;
+            case RoundStatus.CONCLUDE: return EndTimer;
 
             default: return -1;
         }
@@ -292,12 +296,12 @@ public class NumberClashGame : MinigameBase
     GameTimer gmTimer;
 
     //Resets the GameManagers timer
-    void ResetGMTimer()
+    void ResetGMTimer(float time)
     {
         if (gmTimer == null) return;
 
+        gmTimer.m_TimerMax = time;
         gmTimer.ResetClock();
-        gmTimer.PauseTimer();
     }
 
     //Startup game
@@ -308,7 +312,7 @@ public class NumberClashGame : MinigameBase
         //Get GameManager Timer for pausing/resetting to prevent issues
         gmTimer = FindFirstObjectByType<GameManager>().m_GameTimer;
 
-        ResetGMTimer();
+        ResetGMTimer(-1);
 
         playerManager = FindFirstObjectByType<PlayerManager>();
 
@@ -341,6 +345,9 @@ public class NumberClashGame : MinigameBase
     {
         Debug.Log("GAME END");
         curRoundStatus = RoundStatus.CONCLUDE;
+        
+        gameTimer = new GameTimer(EndTimer);
+        ResetGMTimer(EndTimer);
 
         var scoring = GetPlayerRanking();
 
@@ -348,16 +355,13 @@ public class NumberClashGame : MinigameBase
         {
             Debug.Log($"RANK {i+1} - PLAYER {i} with {scoring[i]}");
         }
-
-        EndGame();
-
-        ResetGMTimer();
     }
 
     //Stops the game from playing
     public void StopGame()
     {
         isGamePlaying = false;
+        EndGame();
     }
 
     //Determine score from that round for each player
@@ -383,6 +387,8 @@ public class NumberClashGame : MinigameBase
 
                 foreach (var other in otherSlots)
                     other.SetCenterIcon(player);
+
+                PlayerAudioManager.PlayOneShot(player, slot.SuccessSound);
             }
         }
     }
@@ -397,11 +403,11 @@ public class NumberClashGame : MinigameBase
         if (!isGamePlaying)
             isGamePlaying = true;
 
-        ResetGMTimer();
-
         ResetPlayersChoice();
 
         gameTimer = new GameTimer(RoundTimer);
+        ResetGMTimer(RoundTimer);
+
         curRoundStatus = RoundStatus.ACTIVE;
     }
 
@@ -417,8 +423,6 @@ public class NumberClashGame : MinigameBase
     public void EndRound()
     {
         Debug.Log("Round end");
-
-        ResetGMTimer();
 
         curRoundStatus = RoundStatus.POST;
         ForcePlayersChoice();
@@ -447,6 +451,7 @@ public class NumberClashGame : MinigameBase
         else
         {
             gameTimer = new GameTimer(IntermissionTimer);
+            ResetGMTimer(IntermissionTimer);
 
             curRound--;
         }
@@ -674,7 +679,13 @@ public class NumberClashGame : MinigameBase
             slot.SetCenterIcon(-1, true);
 
             for (int p = 0; p < players.Count; p++)
+            {
                 slot.SetCornerIcon(p, players[p]);
+
+                //If this grid belongs to that player
+                if (players[p] == i)
+                    PlayerAudioManager.PlayOneShot(i, slot.ClashSound);
+            }
         }
     }
 
