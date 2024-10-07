@@ -166,7 +166,7 @@ public class ChoiceSlot : MonoBehaviour
         PlayerOwner = player;
     }
 
-    //Reset slots
+    //Resets slot
     public void Reset()
     {
         imgTop.SetActive(false);
@@ -177,5 +177,7 @@ public class ChoiceSlot : MonoBehaviour
 
         IsSelected = false;
         PlayerOwner = -1;
+
+        slotIcon.color = BackgroundColor;
     }
 }

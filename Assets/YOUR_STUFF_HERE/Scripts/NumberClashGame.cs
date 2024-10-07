@@ -289,6 +289,7 @@ public class NumberClashGame : MinigameBase
     //Hacky fix to prevent loading more than once
     bool hasLoaded = false;
 
+    //Startup game
     public void InitialiseGame()
     {
         if (hasLoaded) return;
@@ -319,6 +320,7 @@ public class NumberClashGame : MinigameBase
         Debug.Log("NUMBER CLASH: Loaded");
     }
 
+    //Finishes the game, this does NOT stop the game
     public void FinishGame()
     {
         Debug.Log("GAME END");
@@ -334,6 +336,7 @@ public class NumberClashGame : MinigameBase
         EndGame();
     }
 
+    //Stops the game from playing
     public void StopGame()
     {
         isGamePlaying = false;
@@ -368,6 +371,7 @@ public class NumberClashGame : MinigameBase
 
     #region Rounds
 
+    //Begins a new round
     public void StartRound()
     {
         Debug.Log("Round Start");
@@ -381,6 +385,7 @@ public class NumberClashGame : MinigameBase
         curRoundStatus = RoundStatus.ACTIVE;
     }
 
+    //Shows the round results
     void ShowRoundResults()
     {
         List<ChoiceSlot> slots = GetSelectedFromGrids();
@@ -388,6 +393,7 @@ public class NumberClashGame : MinigameBase
         DetermineScore(slots);
     }
 
+    //Ends that round
     public void EndRound()
     {
         Debug.Log("Round end");
@@ -402,6 +408,8 @@ public class NumberClashGame : MinigameBase
         {
             for (int i = GetTotalPlayersActive(); i < 4; i++)
             {
+                //Random Range goes from 0 to 4 to prevent bots avoiding specific slots
+                //despite row index goes from 0 to 3
                 UpdateSlot(i, Random.Range(0, 4));
                 AssignSlot(i, true);
             }
@@ -428,24 +436,22 @@ public class NumberClashGame : MinigameBase
 
     public override GameScoreData GetScoreData()
     {
-        throw new System.NotImplementedException();
+        GameScoreData gsd = new GameScoreData();
 
-        //Copied from the SimpleExampleGame script
+        for (int i = 0; i < 4; i++)
+        {
+            if (PlayerUtilities.GetPlayerState(i) == Player.PlayerState.ACTIVE)
+            {
+                gsd.PlayerScores[i] = playerList[i].Score;
+                
+                //gsd.PlayerTimes[i] = Mathf.Min(m_Scores[i] / 2, 1);
+                //teamTime += gsd.PlayerTimes[i];
+            }
+        }
 
-        //int teamTime = 0;
-        //GameScoreData gsd = new GameScoreData();
-        //for (int i = 0; i < 4; i++)
-        //{
-        //    if (PlayerUtilities.GetPlayerState(i) == Player.PlayerState.ACTIVE)
-        //    {
-        //        gsd.PlayerScores[i] = m_Scores[i];
-        //        gsd.PlayerTimes[i] = Mathf.Min(m_Scores[i] / 2, 1);
-        //        teamTime += gsd.PlayerTimes[i];
-        //    }
-        //}
-        //gsd.ScoreSuffix = " cleaned";
-        //gsd.TeamTime = teamTime;
-        //return gsd;
+        gsd.ScoreSuffix = " points";
+
+        return gsd;
     }
 
     #region Input Functions
@@ -487,7 +493,7 @@ public class NumberClashGame : MinigameBase
         playerList[playerIndex].LockIn = true;
     }
 
-    //Resets all players choice and lock in
+    //Resets all players choice and locking
     void ResetPlayersChoice()
     {
         for (int i = 0; i < playerList.Length; i++)
@@ -497,6 +503,7 @@ public class NumberClashGame : MinigameBase
         }
     }
 
+    //Resets all players for a new game
     void ResetPlayers()
     {
         for (int i = 0; i < playerList.Length; i++)
@@ -540,13 +547,31 @@ public class NumberClashGame : MinigameBase
     public override void TimeUp()
     {
         ///End the selection phase
-
     }
 
     protected override void OnResetGame()
     {
         Debug.Log("RESET");
+
         ResetPlayersChoice();
+        ResetGrid();
+    }
+
+    void ResetGrid()
+    {
+        //Grid
+        for (int g = 0; g < 4; g++)
+        {
+            var grid = GetGrid(g);
+
+            //Column
+            for (int c = 0; c < grid.GetLength(0); c++)
+            {
+                //Row
+                for (int r = 0; r < grid.GetLength(1); r++)
+                    grid[c, r].GetComponent<ChoiceSlot>().Reset();
+            }
+        }
     }
 
     void CheckPlayers()
