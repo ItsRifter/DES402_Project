@@ -289,10 +289,26 @@ public class NumberClashGame : MinigameBase
     //Hacky fix to prevent loading more than once
     bool hasLoaded = false;
 
+    GameTimer gmTimer;
+
+    //Resets the GameManagers timer
+    void ResetGMTimer()
+    {
+        if (gmTimer == null) return;
+
+        gmTimer.ResetClock();
+        gmTimer.PauseTimer();
+    }
+
     //Startup game
     public void InitialiseGame()
     {
         if (hasLoaded) return;
+
+        //Get GameManager Timer for pausing/resetting to prevent issues
+        gmTimer = FindFirstObjectByType<GameManager>().m_GameTimer;
+
+        ResetGMTimer();
 
         playerManager = FindFirstObjectByType<PlayerManager>();
 
@@ -334,6 +350,8 @@ public class NumberClashGame : MinigameBase
         }
 
         EndGame();
+
+        ResetGMTimer();
     }
 
     //Stops the game from playing
@@ -379,6 +397,8 @@ public class NumberClashGame : MinigameBase
         if (!isGamePlaying)
             isGamePlaying = true;
 
+        ResetGMTimer();
+
         ResetPlayersChoice();
 
         gameTimer = new GameTimer(RoundTimer);
@@ -397,6 +417,8 @@ public class NumberClashGame : MinigameBase
     public void EndRound()
     {
         Debug.Log("Round end");
+
+        ResetGMTimer();
 
         curRoundStatus = RoundStatus.POST;
         ForcePlayersChoice();
