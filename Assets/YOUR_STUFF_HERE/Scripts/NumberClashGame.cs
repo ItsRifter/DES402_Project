@@ -1,8 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-
 public struct PlayerStats
 {
     public GameObject Choice;
@@ -58,6 +58,10 @@ public class NumberClashGame : MinigameBase
     [Tooltip("How long to wait when the game ends to reset for next game")]
     [SerializeField] float EndTimer = 5.0f;
 
+    [SerializeField] GameObject startScreen;
+    [SerializeField] GameObject gameScreen;
+    [SerializeField] GameObject endScreen;
+
     GameTimer gameTimer;
 
     int curRound;
@@ -69,7 +73,8 @@ public class NumberClashGame : MinigameBase
         IDLE,
         ACTIVE,
         POST,
-        CONCLUDE
+        CONCLUDE,
+        CONCLUDE_2
     }
 
     RoundStatus curRoundStatus = RoundStatus.IDLE;
@@ -316,10 +321,28 @@ public class NumberClashGame : MinigameBase
 
         playerManager = FindFirstObjectByType<PlayerManager>();
 
-        //Treat curRound as the index for the array
-        curRound = MaxRounds-1;
-
         CreatePlayers();
+
+        hasLoaded = true;
+
+        Debug.Log("NUMBER CLASH: Loaded");
+    }
+
+    void NewGame()
+    {
+        //Treat curRound as the index for the array
+        curRound = MaxRounds - 1;
+
+        CreateGrids();
+    }
+
+    void CreateGrids()
+    {
+        //Make these arrays null regardless if its the first time - for future rematches
+        gridOne = null;
+        gridTwo = null;
+        gridThree = null;
+        gridFour = null;
 
         //Create the grid for each player
         for (int i = 0; i < uiGrids.Length; i++)
@@ -334,34 +357,44 @@ public class NumberClashGame : MinigameBase
                 case 3: gridFour = newGrid; break;
             }
         }
-
-        hasLoaded = true;
-
-        Debug.Log("NUMBER CLASH: Loaded");
     }
 
-    //Finishes the game, this does NOT stop the game
-    public void FinishGame()
+    void ShowResults()
     {
-        Debug.Log("GAME END");
-        curRoundStatus = RoundStatus.CONCLUDE;
-        
-        gameTimer = new GameTimer(EndTimer);
-        ResetGMTimer(EndTimer);
+        //Show screens
+        PlayerWinScreen winScreen = endScreen.GetComponent<PlayerWinScreen>();
+        winScreen.ShowScreens();
 
-        var scoring = GetPlayerRanking();
+        //Get players score for display
+        int[] scores = playerList.Select(p => p.Score).ToArray();
+        winScreen.SetPlayerStats(scores);
 
-        for (int i = 0; i < playerList.Length; i++)
-        {
-            Debug.Log($"RANK {i+1} - PLAYER {i} with {scoring[i]}");
-        }
+        //Show/Hide panels
+        gameScreen.SetActive(false);
+        endScreen.SetActive(true);
+
+        StartCoroutine(WaitTimerAction( EndTimer, () => StopGame()) );
+    }
+
+    //Wait before finally ending the game
+    IEnumerator WaitTimerAction(float time, System.Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action.Invoke();
     }
 
     //Stops the game from playing
     public void StopGame()
     {
-        isGamePlaying = false;
+        endScreen.GetComponent<PlayerWinScreen>().HideScreens();
+        
+        startScreen.SetActive(true);
+        endScreen.SetActive(false);
+
+        playerManager.ForceDisconnectAllPlayers();
+
         EndGame();
+        isGamePlaying = false;
     }
 
     //Determine score from that round for each player
@@ -401,7 +434,13 @@ public class NumberClashGame : MinigameBase
         Debug.Log("Round Start");
 
         if (!isGamePlaying)
+        {
+            Debug.Log("New Game");
+            NewGame();
+
             isGamePlaying = true;
+            gameScreen.SetActive(true);
+        }
 
         ResetPlayersChoice();
 
@@ -445,7 +484,16 @@ public class NumberClashGame : MinigameBase
 
         //Last round has concluded, end the game
         if (curRound == 0)
-            FinishGame();
+        {
+            Debug.Log("GAME END");
+           
+            gameTimer = new GameTimer(IntermissionTimer);
+            ResetGMTimer(IntermissionTimer);
+
+            curRoundStatus = RoundStatus.IDLE;
+
+            StartCoroutine(WaitTimerAction(IntermissionTimer, () => ShowResults()));
+        }
 
         //Otherwise continue with the game
         else
@@ -619,7 +667,7 @@ public class NumberClashGame : MinigameBase
         ///Game complete function here
         if (!isGamePlaying) return;
         
-        CheckPlayers();
+        //CheckPlayers();
 
         gameTimer.Tick(Time.deltaTime);
         float timeLeft = gameTimer.TotalTime;
@@ -630,9 +678,10 @@ public class NumberClashGame : MinigameBase
             {
                 case RoundStatus.IDLE: break;
 
-                case RoundStatus.ACTIVE: EndRound(); break;
-                case RoundStatus.POST: StartRound(); break;
-                case RoundStatus.CONCLUDE: StopGame(); break;
+                case RoundStatus.ACTIVE: EndRound(); return;
+                case RoundStatus.POST: StartRound(); return;
+                //case RoundStatus.CONCLUDE: ShowResults(); return;
+                //case RoundStatus.CONCLUDE_2: StopGame(); return;
             }
         }
     }
