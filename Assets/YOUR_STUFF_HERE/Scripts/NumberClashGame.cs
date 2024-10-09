@@ -667,7 +667,7 @@ public class NumberClashGame : MinigameBase
         ///Game complete function here
         if (!isGamePlaying) return;
         
-        //CheckPlayers();
+        CheckPlayers();
 
         gameTimer.Tick(Time.deltaTime);
         float timeLeft = gameTimer.TotalTime;
