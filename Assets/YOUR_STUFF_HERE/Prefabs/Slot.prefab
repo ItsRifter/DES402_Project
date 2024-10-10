@@ -460,9 +460,9 @@ MonoBehaviour:
   imgRight: {fileID: 236806675635147662}
   imgBottom: {fileID: 6438706307936782839}
   imgCenter: {fileID: 5045049134676532474}
-  SelectSound: {fileID: 8300000, guid: a0efb50a122a39f4e9ee59d9cdcb3393, type: 3}
-  ClashSound: {fileID: 8300000, guid: fb47dd2e193ee1342ae994ee1d0dd3a3, type: 3}
-  SuccessSound: {fileID: 8300000, guid: 5dad2cd2d5e23cf45b64da7538dbcbc3, type: 3}
+  SelectSound: {fileID: 8300000, guid: 9009d4414c89beb4da5bc4bfadc80310, type: 3}
+  ClashSound: {fileID: 8300000, guid: abb438bcedd29bc44bcf325353e52961, type: 3}
+  SuccessSound: {fileID: 8300000, guid: 43ffebee73b6f7945ab156c7013bb3fb, type: 3}
   RowIndex: 0
 --- !u!114 &7665568792841450305
 MonoBehaviour:
