@@ -154,6 +154,8 @@ public class NumberClashGame : MinigameBase
         return slots.Where(s => s.RowIndex == curSlot.RowIndex).Select(p => p.PlayerOwner).ToList();
     }
 
+    List<PlayerStats> GetPlayersNonActive() => playerList.Where(a => !a.IsPlaying).ToList();
+
     int GetTotalPlayersActive() => playerList.Where(a => a.IsPlaying).Count();
 
     //Gets selected slots from each grid
@@ -471,13 +473,21 @@ public class NumberClashGame : MinigameBase
         //If theres less than 4 players, fill in the missing slots
         if (CanBotsPlay())
         {
-            for (int i = GetTotalPlayersActive(); i < 4; i++)
+            foreach (var player in GetPlayersNonActive())
             {
+                int id = player.ID;
+
                 //Random Range goes from 0 to 4 to prevent bots avoiding specific slots
                 //despite row index goes from 0 to 3
+                UpdateSlot(id, Random.Range(0, 4));
+                AssignSlot(id, true);
+            }
+
+            /*for (int i = GetTotalPlayersActive(); i < 4; i++)
+            {
                 UpdateSlot(i, Random.Range(0, 4));
                 AssignSlot(i, true);
-            }
+            }*/
         }
 
         ShowRoundResults();
@@ -655,6 +665,16 @@ public class NumberClashGame : MinigameBase
 
         for (int i = 0; i < players; i++)
         {
+            //Player has just joined, connect them
+            if (playerManager.players[i].playerState == Player.PlayerState.HOLDING)
+            {
+                playerManager.players[i].Connect();
+                playerManager.players[i].playerState = Player.PlayerState.ACTIVE;
+
+                playerManager.SetIdleScreenVisibility(i, false);
+            }
+
+            //If a player has gone idle, Consider them as no longer playing
             if (playerManager.players[i].playerState == Player.PlayerState.IDLE)
                 playerList[i].IsPlaying = false;
             else

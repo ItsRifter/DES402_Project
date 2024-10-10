@@ -189,7 +189,7 @@ public class PlayerManager : MonoBehaviour
 
     public void SetHoldingScreenVisibility(int index, bool visibility) 
     {
-        playerHoldingScreens[index].SetActive(visibility);
+        //playerHoldingScreens[index].SetActive(visibility);
         players[index].showingCountdown = visibility;
     }
 
