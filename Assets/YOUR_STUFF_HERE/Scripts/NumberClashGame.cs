@@ -766,10 +766,17 @@ public class NumberClashGame : MinigameBase
 
         GameObject lastSlot = playerList[player].Choice;
 
-        if (lastSlot != null)
-            lastSlot.GetComponent<Image>().color = Color.grey;
+        ChoiceSlot choiceSlot = slot.GetComponent<ChoiceSlot>();
 
-        slot.GetComponent<ChoiceSlot>().OnSelected(player);
+        if (lastSlot != null)
+        {
+            //Selected slot is the last slot
+            if (choiceSlot.RowIndex == lastSlot.GetComponent<ChoiceSlot>().RowIndex) return;
+
+            lastSlot.GetComponent<Image>().color = Color.grey;
+        }
+
+        choiceSlot.OnSelected(player);
 
         playerList[player].Choice = slot;    
     }
